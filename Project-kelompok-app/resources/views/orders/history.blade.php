@@ -3,14 +3,14 @@
 @section('title', 'Riwayat Order — Karsa Studio')
 
 @section('content')
-<div class="max-w-5xl mx-auto px-6 py-16">
+<div class="max-w-6xl mx-auto px-6 py-16">
     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
         <div>
-            <span class="text-[10px] tracking-[0.25em] uppercase text-zinc-500 font-semibold">Akun Saya</span>
-            <h1 class="text-4xl md:text-5xl font-extralight tracking-tight text-white mt-4 leading-tight">
+            <span class="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">Akun Saya</span>
+            <h1 class="text-5xl md:text-6xl font-extralight tracking-tight text-white mt-6 leading-[1.05]">
                 Riwayat <span class="font-normal text-zinc-400">Order</span>
             </h1>
-            <p class="text-zinc-400 text-sm leading-relaxed tracking-wide font-light max-w-2xl mt-4">
+            <p class="text-zinc-400 text-sm md:text-base leading-relaxed font-light max-w-2xl mt-5">
                 Semua order yang dibuat menggunakan akun {{ auth()->user()->email }} akan tampil di sini.
             </p>
         </div>
@@ -21,9 +21,9 @@
     </div>
 
     @if($orders->isEmpty())
-        <div class="border border-zinc-900 bg-zinc-950 p-10 rounded-2xl text-center">
-            <h2 class="text-xl font-light text-white mb-3">Belum ada order</h2>
-            <p class="text-zinc-500 text-xs leading-relaxed max-w-md mx-auto">
+        <div class="border border-zinc-900 bg-zinc-950 p-10 rounded-lg text-center">
+            <h2 class="text-2xl font-semibold text-white mb-3">Belum ada order</h2>
+            <p class="text-zinc-400 text-sm leading-relaxed max-w-md mx-auto">
                 Setelah Anda melakukan checkout produk digital, riwayat order akan muncul di halaman ini.
             </p>
             <a href="{{ route('store') }}" class="mt-8 inline-flex justify-center bg-zinc-50 hover:bg-zinc-200 text-zinc-950 text-xs font-semibold py-3.5 px-6 rounded-lg tracking-widest transition-all duration-200 uppercase">
@@ -33,11 +33,11 @@
     @else
         <div class="space-y-5">
             @foreach($orders as $order)
-                <article class="border border-zinc-900 bg-zinc-950 p-6 rounded-2xl">
+                <article class="border border-zinc-900 bg-zinc-950 p-6 rounded-lg">
                     <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                         <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-3 mb-3">
-                                <h2 class="text-lg font-medium text-white tracking-wide">{{ $order->id }}</h2>
+                                <h2 class="text-xl font-semibold text-white tracking-tight">{{ $order->id }}</h2>
 
                                 @if($order->status === 'paid')
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-medium bg-emerald-950/40 text-emerald-400 border border-emerald-900/50">SUKSES</span>

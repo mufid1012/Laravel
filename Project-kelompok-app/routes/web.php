@@ -12,7 +12,9 @@ Route::get('/', function () {
         return redirect()->route('admin.dashboard');
     }
 
-    return view('dashboard');
+    $featuredProducts = \App\Models\Product::latest()->take(3)->get();
+
+    return view('dashboard', compact('featuredProducts'));
 })->name('dashboard');
 Route::get('/katalog', [OrderController::class, 'index'])->name('store');
 Route::get('/riwayat-order', [OrderController::class, 'history'])->middleware('auth')->name('orders.history');
@@ -31,8 +33,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 Route::middleware(['auth', 'can:access-admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminProductController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders', [AdminProductController::class, 'orders'])->name('orders.index');
+    Route::get('/katalog', [AdminProductController::class, 'index'])->name('products.index');
     Route::get('/katalog/tambah', [AdminProductController::class, 'create'])->name('products.create');
     Route::post('/katalog', [AdminProductController::class, 'store'])->name('products.store');
+    Route::get('/katalog/{product}/edit', [AdminProductController::class, 'edit'])->name('products.edit');
+    Route::put('/katalog/{product}', [AdminProductController::class, 'update'])->name('products.update');
+    Route::delete('/katalog/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
 });
 
 // Midtrans Notification Webhook (exempt from CSRF)

@@ -3,17 +3,18 @@
 @section('title', 'Karsa Studio — Status Pembayaran')
 
 @section('content')
-<div class="max-w-2xl mx-auto px-6 py-16">
+<div class="max-w-6xl mx-auto px-6 py-16">
     
     <!-- Status Card Header -->
-    <div class="text-center mb-12">
-        <span class="text-[10px] tracking-[0.25em] uppercase text-zinc-500 font-semibold">Transaksi Detail</span>
-        <h1 class="text-3xl font-light text-white tracking-wide mt-2">ID Order: {{ $order->id }}</h1>
-        <p class="text-zinc-500 text-xs mt-1">Dibuat pada {{ $order->created_at->format('d M Y, H:i') }} WIB</p>
+    <div class="text-center mb-12 max-w-3xl mx-auto">
+        <span class="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">Transaksi Detail</span>
+        <h1 class="text-4xl md:text-5xl font-extralight tracking-tight text-white mt-6 leading-[1.05]">Order {{ $order->id }}</h1>
+        <p class="text-zinc-500 text-xs mt-4">Dibuat pada {{ $order->created_at->format('d M Y, H:i') }} WIB</p>
     </div>
 
+    <div class="max-w-2xl mx-auto">
     <!-- Status Banner / Timeline -->
-    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-2xl mb-8">
+    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-lg mb-8">
         
         <!-- Status Info -->
         <div class="flex items-center justify-between mb-8">
@@ -49,9 +50,9 @@
         <!-- Main Display Content depending on Status -->
         @if($order->status == 'paid')
             <div class="space-y-6">
-                <div class="bg-zinc-900/40 border border-zinc-900 p-6 rounded-xl">
-                    <h3 class="text-sm font-semibold tracking-wide text-white mb-2">Terima kasih atas pembelian Anda</h3>
-                    <p class="text-zinc-400 text-xs font-light leading-relaxed mb-6">
+                <div class="bg-zinc-900/40 border border-zinc-900 p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold tracking-tight text-white mb-2">Terima kasih atas pembelian Anda</h3>
+                    <p class="text-zinc-400 text-sm font-light leading-relaxed mb-6">
                         Pembayaran Anda telah diverifikasi oleh gateway. Anda sekarang dapat mengunduh produk digital premium Anda menggunakan tombol di bawah ini.
                     </p>
 
@@ -75,7 +76,7 @@
 
         @elseif($order->status == 'pending')
             <div class="space-y-6">
-                <p class="text-zinc-400 text-xs leading-relaxed font-light">
+                <p class="text-zinc-400 text-sm leading-relaxed font-light">
                     Selesaikan pembayaran sebesar <strong class="text-white">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong> untuk mendapatkan akses produk.
                 </p>
 
@@ -88,7 +89,7 @@
                         Bayar Sekarang (Midtrans)
                     </button>
                 @else
-                    <div class="p-6 bg-zinc-900 border border-zinc-850 rounded-xl space-y-4">
+                    <div class="p-6 bg-zinc-900 border border-zinc-850 rounded-lg space-y-4">
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
@@ -147,7 +148,7 @@
     </div>
 
     <!-- Order Item Summary Cards -->
-    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-2xl">
+    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-lg">
         <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-6">Ringkasan Order</h3>
         
         <div class="space-y-4">
@@ -196,6 +197,7 @@
                 </div>
             @endif
         </div>
+    </div>
     </div>
 </div>
 @endsection

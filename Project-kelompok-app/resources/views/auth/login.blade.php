@@ -3,14 +3,15 @@
 @section('title', 'Login — Karsa Studio')
 
 @section('content')
-<div class="max-w-md mx-auto px-6 py-16">
+<div class="max-w-6xl mx-auto px-6 py-16">
+    <div class="max-w-md mx-auto">
     <div class="mb-10 text-center">
-        <span class="text-[10px] tracking-[0.25em] uppercase text-zinc-500 font-semibold">Masuk Akun</span>
-        <h1 class="text-3xl font-light text-white tracking-wide mt-2">Login</h1>
-        <p class="text-zinc-500 text-xs mt-3 leading-relaxed">Masuk untuk melanjutkan checkout dan mengakses pembelian Anda.</p>
+        <span class="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">Masuk Akun</span>
+        <h1 class="text-5xl md:text-6xl font-extralight tracking-tight text-white mt-6 leading-[1.05]">Login</h1>
+        <p class="text-zinc-400 text-sm mt-5 leading-relaxed">Masuk untuk melanjutkan checkout dan mengakses riwayat order Anda.</p>
     </div>
 
-    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-2xl">
+    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-lg">
         @if($errors->any())
             <div class="mb-6 rounded-lg border border-rose-900/50 bg-rose-950/30 px-4 py-3 text-xs text-rose-200">
                 {{ $errors->first() }}
@@ -60,6 +61,7 @@
             Belum punya akun?
             <a href="{{ route('register') }}" class="text-zinc-200 hover:text-white font-medium">Daftar sekarang</a>
         </p>
+    </div>
     </div>
 </div>
 @endsection
