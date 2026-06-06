@@ -2,12 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentNotificationController;
 
 Route::view('/', 'dashboard')->name('dashboard');
 Route::get('/katalog', [OrderController::class, 'index'])->name('store');
+Route::get('/riwayat-order', [OrderController::class, 'history'])->middleware('auth')->name('orders.history');
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth')->name('checkout');
 Route::get('/order/{order_id}', [OrderController::class, 'status'])->name('order.status');
 Route::post('/order/{order_id}/simulate-pay', [OrderController::class, 'simulatePay'])->name('order.simulate-pay');
@@ -20,6 +22,12 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminProductController::class, 'dashboard'])->name('dashboard');
+    Route::get('/katalog/tambah', [AdminProductController::class, 'create'])->name('products.create');
+    Route::post('/katalog', [AdminProductController::class, 'store'])->name('products.store');
+});
 
 // Midtrans Notification Webhook (exempt from CSRF)
 Route::post('/payment/callback', [PaymentNotificationController::class, 'handle'])->name('payment.callback');

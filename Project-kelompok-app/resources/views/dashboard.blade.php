@@ -27,6 +27,9 @@
                         Login Akun
                     </a>
                 @else
+                    <a href="{{ route('orders.history') }}" class="inline-flex justify-center bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold py-3.5 px-6 rounded-lg border border-zinc-800 tracking-widest transition-all duration-200 uppercase">
+                        Riwayat Order
+                    </a>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="w-full sm:w-auto bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold py-3.5 px-6 rounded-lg border border-zinc-800 tracking-widest transition-all duration-200 uppercase">

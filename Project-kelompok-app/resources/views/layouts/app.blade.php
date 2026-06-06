@@ -67,6 +67,14 @@
                 </a>
 
                 @auth
+                    @if(auth()->user()->is_admin)
+                        <a href="{{ route('admin.dashboard') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                            ADMIN
+                        </a>
+                    @endif
+                    <a href="{{ route('orders.history') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                        RIWAYAT
+                    </a>
                     <span class="hidden md:inline text-xs tracking-widest text-zinc-500">
                         {{ auth()->user()->name }}
                     </span>
