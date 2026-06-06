@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class AdminProductTest extends TestCase
@@ -34,6 +35,27 @@ class AdminProductTest extends TestCase
             ->assertOk()
             ->assertSee('Dashboard')
             ->assertSee('Katalog');
+    }
+
+    public function test_role_gates_distinguish_admin_and_customer(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $customer = User::factory()->create(['is_admin' => false]);
+
+        $this->assertTrue(Gate::forUser($admin)->allows('access-admin'));
+        $this->assertFalse(Gate::forUser($admin)->allows('access-customer'));
+
+        $this->assertTrue(Gate::forUser($customer)->allows('access-customer'));
+        $this->assertFalse(Gate::forUser($customer)->allows('access-admin'));
+    }
+
+    public function test_product_policy_only_allows_admin_to_create_product(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $customer = User::factory()->create(['is_admin' => false]);
+
+        $this->assertTrue($admin->can('create', Product::class));
+        $this->assertFalse($customer->can('create', Product::class));
     }
 
     public function test_admin_is_redirected_from_user_pages_to_admin_dashboard(): void

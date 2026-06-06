@@ -17,8 +17,8 @@ Route::get('/', function () {
 Route::get('/katalog', [OrderController::class, 'index'])->name('store');
 Route::get('/riwayat-order', [OrderController::class, 'history'])->middleware('auth')->name('orders.history');
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth')->name('checkout');
-Route::get('/order/{order_id}', [OrderController::class, 'status'])->name('order.status');
-Route::post('/order/{order_id}/simulate-pay', [OrderController::class, 'simulatePay'])->name('order.simulate-pay');
+Route::get('/order/{order_id}', [OrderController::class, 'status'])->middleware('auth')->name('order.status');
+Route::post('/order/{order_id}/simulate-pay', [OrderController::class, 'simulatePay'])->middleware('auth')->name('order.simulate-pay');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -29,7 +29,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'can:access-admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminProductController::class, 'dashboard'])->name('dashboard');
     Route::get('/katalog/tambah', [AdminProductController::class, 'create'])->name('products.create');
     Route::post('/katalog', [AdminProductController::class, 'store'])->name('products.store');

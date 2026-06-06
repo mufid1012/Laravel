@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -14,7 +15,7 @@ class ProductController extends Controller
 {
     public function dashboard(Request $request): View
     {
-        $this->authorizeAdmin($request);
+        Gate::authorize('viewAny', Product::class);
 
         $products = Product::latest()->get();
         $productCount = $products->count();
@@ -26,14 +27,14 @@ class ProductController extends Controller
 
     public function create(Request $request): View
     {
-        $this->authorizeAdmin($request);
+        Gate::authorize('create', Product::class);
 
         return view('admin.products.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $this->authorizeAdmin($request);
+        Gate::authorize('create', Product::class);
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -75,11 +76,6 @@ class ProductController extends Controller
         return redirect()
             ->route('admin.dashboard')
             ->with('status_message', 'Produk katalog berhasil ditambahkan.');
-    }
-
-    private function authorizeAdmin(Request $request): void
-    {
-        abort_unless($request->user()?->is_admin, 403);
     }
 
     private function uniqueSlug(string $slug): string
