@@ -21,8 +21,12 @@ class OrderController extends Controller
     /**
      * Display storefront with list of products.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->user()?->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $products = Product::all();
         $midtransConfigured = $this->midtrans->isConfigured();
         
@@ -34,6 +38,10 @@ class OrderController extends Controller
      */
     public function history(Request $request)
     {
+        if ($request->user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $orders = Order::with('items.product')
             ->where('user_id', $request->user()->id)
             ->latest()
@@ -47,6 +55,10 @@ class OrderController extends Controller
      */
     public function checkout(Request $request)
     {
+        if ($request->user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'customer_name' => 'required|string|max:255',
@@ -92,6 +104,10 @@ class OrderController extends Controller
      */
     public function status($order_id, Request $request)
     {
+        if ($request->user()?->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $order = Order::with('items.product')->findOrFail($order_id);
         $this->authorizeOrderOwner($order, $request);
 
@@ -107,6 +123,10 @@ class OrderController extends Controller
      */
     public function simulatePay($order_id, Request $request)
     {
+        if ($request->user()?->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $order = Order::findOrFail($order_id);
         $this->authorizeOrderOwner($order, $request);
         

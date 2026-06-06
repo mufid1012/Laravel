@@ -49,35 +49,34 @@
     <!-- Navigation Header -->
     <header class="border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-5xl mx-auto px-6 py-5 md:h-20 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
-            <a href="{{ route('dashboard') }}" class="group flex items-center gap-3">
+            <a href="{{ auth()->user()?->is_admin ? route('admin.dashboard') : route('dashboard') }}" class="group flex items-center gap-3">
                 <span class="font-light tracking-[0.25em] text-lg text-white group-hover:text-zinc-300 transition-colors">
                     KARSA<span class="font-semibold text-zinc-400">STUDIO</span>
                 </span>
             </a>
             
             <nav class="flex flex-wrap items-center justify-center gap-4 md:gap-8">
-                <a href="{{ route('dashboard') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                    DASHBOARD
-                </a>
-                <a href="{{ route('store') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                    KATALOG
-                </a>
-                <a href="https://github.com" target="_blank" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                    DOKUMENTASI
-                </a>
-
                 @auth
                     @if(auth()->user()->is_admin)
                         <a href="{{ route('admin.dashboard') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                            ADMIN
+                            DASHBOARD ADMIN
+                        </a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                            DASHBOARD
+                        </a>
+                        <a href="{{ route('store') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                            KATALOG
+                        </a>
+                        <a href="https://github.com" target="_blank" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                            DOKUMENTASI
+                        </a>
+                        <a href="{{ route('orders.history') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                            RIWAYAT
                         </a>
                     @endif
-                    <a href="{{ route('orders.history') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                        RIWAYAT
-                    </a>
-                    <span class="hidden md:inline text-xs tracking-widest text-zinc-500">
-                        {{ auth()->user()->name }}
-                    </span>
+
+                    <span class="hidden md:inline text-xs tracking-widest text-zinc-500">{{ auth()->user()->name }}</span>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
@@ -85,6 +84,15 @@
                         </button>
                     </form>
                 @else
+                    <a href="{{ route('dashboard') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                        DASHBOARD
+                    </a>
+                    <a href="{{ route('store') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                        KATALOG
+                    </a>
+                    <a href="https://github.com" target="_blank" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
+                        DOKUMENTASI
+                    </a>
                     <a href="{{ route('login') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
                         LOGIN
                     </a>

@@ -36,6 +36,27 @@ class AdminProductTest extends TestCase
             ->assertSee('Katalog');
     }
 
+    public function test_admin_is_redirected_from_user_pages_to_admin_dashboard(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('admin.dashboard'));
+
+        $this->actingAs($admin)
+            ->get(route('store'))
+            ->assertRedirect(route('admin.dashboard'));
+
+        $this->actingAs($admin)
+            ->get(route('orders.history'))
+            ->assertRedirect(route('admin.dashboard'));
+
+        $this->actingAs($admin)
+            ->post(route('checkout'))
+            ->assertRedirect(route('admin.dashboard'));
+    }
+
     public function test_admin_can_add_catalog_product(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
