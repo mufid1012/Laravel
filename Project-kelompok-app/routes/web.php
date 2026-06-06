@@ -7,7 +7,13 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentNotificationController;
 
-Route::view('/', 'dashboard')->name('dashboard');
+Route::get('/', function () {
+    if (auth()->user()?->is_admin) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return view('dashboard');
+})->name('dashboard');
 Route::get('/katalog', [OrderController::class, 'index'])->name('store');
 Route::get('/riwayat-order', [OrderController::class, 'history'])->middleware('auth')->name('orders.history');
 Route::post('/checkout', [OrderController::class, 'checkout'])->middleware('auth')->name('checkout');

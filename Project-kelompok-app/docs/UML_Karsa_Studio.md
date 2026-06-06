@@ -4,58 +4,93 @@ Dokumentasi ini dibuat berdasarkan isi project Laravel **Karsa Studio**, yaitu a
 
 ## 1. Use Case Diagram
 
-Aktor utama pada aplikasi ini adalah **Guest**, **User**, **Admin**, dan **Midtrans** sebagai sistem pembayaran eksternal.
+Aktor utama pada aplikasi ini adalah **Guest**, **User**, **Admin**, dan **Midtrans** sebagai sistem pembayaran eksternal. Admin dipisahkan dari alur user: admin hanya memakai dashboard admin dan fitur tambah katalog.
 
 ```mermaid
 flowchart LR
-    Guest["Guest"]
-    User["User Login"]
-    Admin["Admin"]
-    Midtrans["Midtrans"]
+    Guest["Actor: Guest"]
+    User["Actor: User"]
+    Admin["Actor: Admin"]
+    Midtrans["Actor: Midtrans"]
 
-    subgraph App["Karsa Studio"]
-        UC1(["Melihat Dashboard"])
-        UC2(["Register Akun"])
-        UC3(["Login Akun"])
-        UC4(["Melihat Katalog"])
-        UC5(["Melihat Detail Produk"])
-        UC6(["Checkout Produk"])
-        UC7(["Melihat Status Order"])
-        UC8(["Simulasi Pembayaran"])
-        UC9(["Download Produk Digital"])
-        UC10(["Logout"])
-        UC11(["Mengirim Callback Pembayaran"])
-        UC12(["Melihat Riwayat Order"])
-        UC13(["Melihat Dashboard Admin"])
-        UC14(["Menambah Produk Katalog"])
+    subgraph System["Karsa Studio"]
+        direction TB
+
+        subgraph Public["Area Publik"]
+            UC_Dashboard(["Melihat Dashboard"])
+            UC_Catalog(["Melihat Katalog"])
+            UC_Detail(["Melihat Detail Produk"])
+            UC_Register(["Register Akun"])
+            UC_Login(["Login Akun"])
+        end
+
+        subgraph UserArea["Area User"]
+            UC_Checkout(["Checkout Produk"])
+            UC_History(["Melihat Riwayat Order"])
+            UC_Status(["Melihat Status Order"])
+            UC_Simulate(["Simulasi Pembayaran"])
+            UC_Download(["Download Produk Digital"])
+            UC_LogoutUser(["Logout"])
+        end
+
+        subgraph AdminArea["Area Admin"]
+            UC_AdminDashboard(["Melihat Dashboard Admin"])
+            UC_AddProduct(["Menambah Produk Katalog"])
+            UC_UploadImage(["Upload Gambar Produk"])
+            UC_ImagePath(["Mengisi Path Gambar"])
+            UC_LogoutAdmin(["Logout Admin"])
+        end
+
+        subgraph Payment["Pembayaran"]
+            UC_MidtransToken(["Membuat Snap Token"])
+            UC_Callback(["Menerima Callback Pembayaran"])
+            UC_UpdateStatus(["Update Status Order"])
+        end
     end
 
-    Guest --> UC1
-    Guest --> UC2
-    Guest --> UC3
-    Guest --> UC4
-    Guest --> UC5
+    Guest --> UC_Dashboard
+    Guest --> UC_Catalog
+    Guest --> UC_Detail
+    Guest --> UC_Register
+    Guest --> UC_Login
 
-    User --> UC1
-    User --> UC4
-    User --> UC5
-    User --> UC6
-    User --> UC7
-    User --> UC8
-    User --> UC9
-    User --> UC10
-    User --> UC12
+    User --> UC_Dashboard
+    User --> UC_Catalog
+    User --> UC_Detail
+    User --> UC_Checkout
+    User --> UC_History
+    User --> UC_Status
+    User --> UC_Simulate
+    User --> UC_Download
+    User --> UC_LogoutUser
 
-    Admin --> UC1
-    Admin --> UC4
-    Admin --> UC10
-    Admin --> UC13
-    Admin --> UC14
+    Admin --> UC_AdminDashboard
+    Admin --> UC_AddProduct
+    Admin --> UC_LogoutAdmin
 
-    Midtrans --> UC11
-    UC11 --> UC7
-    UC6 --> Midtrans
+    Midtrans --> UC_Callback
+
+    UC_Checkout -. include auth user .-> UC_Login
+    UC_History -. include auth user .-> UC_Login
+    UC_Checkout -. include .-> UC_MidtransToken
+    UC_Status -. extend jika pending simulasi .-> UC_Simulate
+    UC_Status -. extend jika paid .-> UC_Download
+    UC_Callback -. include .-> UC_UpdateStatus
+
+    UC_AdminDashboard -. include auth admin .-> UC_Login
+    UC_AddProduct -. include auth admin .-> UC_AdminDashboard
+    UC_AddProduct -. extend opsi gambar .-> UC_UploadImage
+    UC_AddProduct -. extend opsi gambar .-> UC_ImagePath
+
+    UC_MidtransToken --> Midtrans
 ```
+
+Keterangan relasi:
+
+- `Checkout Produk`, `Riwayat Order`, dan `Status Order` mengikuti proteksi akun user pada controller dan middleware.
+- Admin yang membuka halaman user diarahkan kembali ke `Dashboard Admin`, sesuai logic di route dashboard dan `OrderController`.
+- `Upload Gambar Produk` dan `Mengisi Path Gambar` adalah dua opsi input pada form tambah katalog admin; salah satunya wajib diisi.
+- `Download Produk Digital` hanya muncul ketika order berstatus `paid`.
 
 ## 2. Activity Diagram Admin
 
@@ -81,6 +116,8 @@ flowchart TD
     N --> O[Produk muncul di Dashboard Admin dan Katalog User]
     O --> P([Selesai])
 ```
+
+Admin dipisahkan dari alur user. Jika admin membuka dashboard user, katalog belanja, riwayat order user, checkout, atau status order user, sistem mengarahkannya kembali ke dashboard admin.
 
 ## 3. Activity Diagram User
 
@@ -470,6 +507,7 @@ erDiagram
 ## Catatan Batasan Sistem
 
 - Admin sudah bisa menambah produk katalog, tetapi fitur edit dan hapus produk belum tersedia.
+- Admin tidak memakai halaman user seperti katalog belanja, riwayat order, checkout, dan status order user.
 - Checkout hanya membeli satu produk per order.
 - Order baru sudah terhubung ke tabel users melalui `orders.user_id`; data pelanggan tetap disimpan di tabel orders sebagai snapshot checkout.
 - Jika kredensial Midtrans belum dikonfigurasi, sistem memakai token simulasi dan fitur `simulatePay`.
