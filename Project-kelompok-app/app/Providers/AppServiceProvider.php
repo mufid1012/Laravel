@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
+use App\Policies\OrderPolicy;
+use App\Policies\ProductPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::policy(Order::class, OrderPolicy::class);
+        Gate::policy(Product::class, ProductPolicy::class);
+
+        Gate::define('access-admin', fn (User $user): bool => $user->is_admin);
+        Gate::define('access-customer', fn (User $user): bool => ! $user->is_admin);
     }
 }

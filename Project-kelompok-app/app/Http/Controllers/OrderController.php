@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -23,7 +24,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->user()?->is_admin) {
+        if ($request->user() && Gate::forUser($request->user())->denies('access-customer')) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -38,9 +39,11 @@ class OrderController extends Controller
      */
     public function history(Request $request)
     {
-        if ($request->user()->is_admin) {
+        if (Gate::denies('access-customer')) {
             return redirect()->route('admin.dashboard');
         }
+
+        Gate::authorize('viewAny', Order::class);
 
         $orders = Order::with('items.product')
             ->where('user_id', $request->user()->id)
@@ -55,9 +58,11 @@ class OrderController extends Controller
      */
     public function checkout(Request $request)
     {
-        if ($request->user()->is_admin) {
+        if (Gate::denies('access-customer')) {
             return redirect()->route('admin.dashboard');
         }
+
+        Gate::authorize('create', Order::class);
 
         $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -104,12 +109,12 @@ class OrderController extends Controller
      */
     public function status($order_id, Request $request)
     {
-        if ($request->user()?->is_admin) {
+        if ($request->user() && Gate::forUser($request->user())->denies('access-customer')) {
             return redirect()->route('admin.dashboard');
         }
 
         $order = Order::with('items.product')->findOrFail($order_id);
-        $this->authorizeOrderOwner($order, $request);
+        Gate::authorize('view', $order);
 
         $midtransConfigured = $this->midtrans->isConfigured();
         $clientKey = env('MIDTRANS_CLIENT_KEY', '');
@@ -123,12 +128,12 @@ class OrderController extends Controller
      */
     public function simulatePay($order_id, Request $request)
     {
-        if ($request->user()?->is_admin) {
+        if ($request->user() && Gate::forUser($request->user())->denies('access-customer')) {
             return redirect()->route('admin.dashboard');
         }
 
         $order = Order::findOrFail($order_id);
-        $this->authorizeOrderOwner($order, $request);
+        Gate::authorize('simulatePayment', $order);
         
         // Acceptable statuses: paid, expired, failed
         $targetStatus = $request->input('status', 'paid');
@@ -146,10 +151,4 @@ class OrderController extends Controller
             ->with('status_message', 'Payment status updated to: ' . strtoupper($targetStatus));
     }
 
-    private function authorizeOrderOwner(Order $order, Request $request): void
-    {
-        if ($order->user_id && $request->user()?->id !== $order->user_id) {
-            abort(403);
-        }
-    }
 }

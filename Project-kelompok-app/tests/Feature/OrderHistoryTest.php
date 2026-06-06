@@ -89,6 +89,27 @@ class OrderHistoryTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_order_policy_only_allows_customer_to_view_their_own_order(): void
+    {
+        $user = User::factory()->create(['is_admin' => false]);
+        $otherUser = User::factory()->create(['is_admin' => false]);
+        $admin = User::factory()->create(['is_admin' => true]);
+        $product = Product::create([
+            'name' => 'Zen Icon Set',
+            'slug' => 'zen-icon-set',
+            'description' => 'Digital icon pack.',
+            'price' => 39000,
+            'image_path' => 'images/zen_icons.png',
+            'download_url' => 'https://example.com/downloads/zen-icon-set.zip',
+        ]);
+
+        $order = $this->createOrderForUser($user, $product, 'KS-POLICY-1');
+
+        $this->assertTrue($user->can('view', $order));
+        $this->assertFalse($otherUser->can('view', $order));
+        $this->assertFalse($admin->can('view', $order));
+    }
+
     private function createOrderForUser(User $user, Product $product, string $orderId): Order
     {
         $order = Order::create([

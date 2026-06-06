@@ -68,9 +68,6 @@
                         <a href="{{ route('store') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
                             KATALOG
                         </a>
-                        <a href="https://github.com" target="_blank" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                            DOKUMENTASI
-                        </a>
                         <a href="{{ route('orders.history') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
                             RIWAYAT
                         </a>
@@ -89,9 +86,6 @@
                     </a>
                     <a href="{{ route('store') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
                         KATALOG
-                    </a>
-                    <a href="https://github.com" target="_blank" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
-                        DOKUMENTASI
                     </a>
                     <a href="{{ route('login') }}" class="text-xs tracking-widest text-zinc-400 hover:text-white transition-colors">
                         LOGIN
