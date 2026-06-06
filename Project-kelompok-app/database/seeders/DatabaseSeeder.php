@@ -15,10 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::updateOrCreate(
+            ['email' => 'admin@karsastudio.test'],
+            [
+                'name' => 'Admin Karsa Studio',
+                'password' => 'password123',
+                'is_admin' => true,
+            ]
+        );
 
         \App\Models\Product::updateOrCreate(
             ['slug' => 'mesa-wallpaper-pack'],

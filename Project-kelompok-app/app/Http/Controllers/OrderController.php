@@ -30,6 +30,19 @@ class OrderController extends Controller
     }
 
     /**
+     * Display authenticated user's order history.
+     */
+    public function history(Request $request)
+    {
+        $orders = Order::with('items.product')
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->get();
+
+        return view('orders.history', compact('orders'));
+    }
+
+    /**
      * Process checkout request and generate transaction token.
      */
     public function checkout(Request $request)
@@ -49,6 +62,7 @@ class OrderController extends Controller
         // Create Order
         $order = Order::create([
             'id' => $orderId,
+            'user_id' => $request->user()->id,
             'customer_name' => $request->customer_name,
             'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
@@ -76,9 +90,11 @@ class OrderController extends Controller
     /**
      * Display order status and download link if paid.
      */
-    public function status($order_id)
+    public function status($order_id, Request $request)
     {
         $order = Order::with('items.product')->findOrFail($order_id);
+        $this->authorizeOrderOwner($order, $request);
+
         $midtransConfigured = $this->midtrans->isConfigured();
         $clientKey = env('MIDTRANS_CLIENT_KEY', '');
         $isProduction = filter_var(env('MIDTRANS_IS_PRODUCTION', false), FILTER_VALIDATE_BOOLEAN);
@@ -92,6 +108,7 @@ class OrderController extends Controller
     public function simulatePay($order_id, Request $request)
     {
         $order = Order::findOrFail($order_id);
+        $this->authorizeOrderOwner($order, $request);
         
         // Acceptable statuses: paid, expired, failed
         $targetStatus = $request->input('status', 'paid');
@@ -107,5 +124,12 @@ class OrderController extends Controller
 
         return redirect()->route('order.status', ['order_id' => $order->id])
             ->with('status_message', 'Payment status updated to: ' . strtoupper($targetStatus));
+    }
+
+    private function authorizeOrderOwner(Order $order, Request $request): void
+    {
+        if ($order->user_id && $request->user()?->id !== $order->user_id) {
+            abort(403);
+        }
     }
 }

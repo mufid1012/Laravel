@@ -1,15 +1,16 @@
 # UML Karsa Studio
 
-Dokumentasi ini dibuat berdasarkan isi project Laravel **Karsa Studio**, yaitu aplikasi toko asset digital dengan fitur dashboard, autentikasi, katalog produk, detail produk, checkout, status order, simulasi pembayaran, dan integrasi callback Midtrans.
+Dokumentasi ini dibuat berdasarkan isi project Laravel **Karsa Studio**, yaitu aplikasi toko asset digital dengan fitur dashboard, autentikasi, katalog produk, detail produk, checkout, riwayat order user, dashboard admin, tambah katalog produk, status order, simulasi pembayaran, dan integrasi callback Midtrans.
 
 ## 1. Use Case Diagram
 
-Aktor utama pada aplikasi ini adalah **Guest**, **User**, dan **Midtrans** sebagai sistem pembayaran eksternal.
+Aktor utama pada aplikasi ini adalah **Guest**, **User**, **Admin**, dan **Midtrans** sebagai sistem pembayaran eksternal.
 
 ```mermaid
 flowchart LR
     Guest["Guest"]
     User["User Login"]
+    Admin["Admin"]
     Midtrans["Midtrans"]
 
     subgraph App["Karsa Studio"]
@@ -24,6 +25,9 @@ flowchart LR
         UC9(["Download Produk Digital"])
         UC10(["Logout"])
         UC11(["Mengirim Callback Pembayaran"])
+        UC12(["Melihat Riwayat Order"])
+        UC13(["Melihat Dashboard Admin"])
+        UC14(["Menambah Produk Katalog"])
     end
 
     Guest --> UC1
@@ -40,13 +44,45 @@ flowchart LR
     User --> UC8
     User --> UC9
     User --> UC10
+    User --> UC12
+
+    Admin --> UC1
+    Admin --> UC4
+    Admin --> UC10
+    Admin --> UC13
+    Admin --> UC14
 
     Midtrans --> UC11
     UC11 --> UC7
     UC6 --> Midtrans
 ```
 
-## 2. Activity Diagram
+## 2. Activity Diagram Admin
+
+Alur admin dipakai untuk masuk ke dashboard admin dan menambahkan produk katalog baru.
+
+```mermaid
+flowchart TD
+    A([Mulai]) --> B[Admin login]
+    B --> C{Akun admin?}
+    C -- Tidak --> D[Akses ditolak 403]
+    C -- Ya --> E[Dashboard Admin ditampilkan]
+    E --> F[Admin klik Tambah Katalog]
+    F --> G[Admin mengisi data produk]
+    G --> H{Data valid?}
+    H -- Tidak --> I[Tampilkan error validasi]
+    I --> G
+    H -- Ya --> J[Sistem membuat slug unik]
+    J --> K{Upload gambar?}
+    K -- Ya --> L[Simpan gambar ke public/images/products]
+    K -- Tidak --> M[Gunakan image_path yang diisi]
+    L --> N[Produk disimpan ke database]
+    M --> N
+    N --> O[Produk muncul di Dashboard Admin dan Katalog User]
+    O --> P([Selesai])
+```
+
+## 3. Activity Diagram User
 
 Alur utama aplikasi dimulai dari dashboard, masuk ke katalog, melihat detail produk, lalu checkout jika user sudah login.
 
@@ -57,7 +93,7 @@ Alur utama aplikasi dimulai dari dashboard, masuk ke katalog, melihat detail pro
         C -- Belum --> D[Login atau Register]
         D --> E[Dashboard menampilkan status akun]
         C -- Sudah --> E
-        E --> F[User membuka Katalog]
+    E --> F[User membuka Katalog]
         F --> G[User memilih Lihat Detail Produk]
         G --> H[Modal detail produk ditampilkan]
         H --> I{Lanjut checkout?}
@@ -68,17 +104,19 @@ Alur utama aplikasi dimulai dari dashboard, masuk ke katalog, melihat detail pro
         K --> L[Sistem membuat Order]
         L --> M[Sistem membuat Order Item]
         M --> N[Sistem meminta Snap Token Midtrans]
-        N --> O[User diarahkan ke Status Order]
-        O --> P{Status pembayaran}
+    N --> O[User diarahkan ke Status Order]
+    O --> P{Status pembayaran}
         P -- Pending --> Q[Bayar via Midtrans atau Simulasi Pembayaran]
         Q --> O
-        P -- Paid --> R[Link download produk ditampilkan]
-        P -- Expired atau Failed --> S[User dapat membuat order ulang]
-        R --> T([Selesai])
-        S --> T
+    P -- Paid --> R[Link download produk ditampilkan]
+    P -- Expired atau Failed --> S[User dapat membuat order ulang]
+    O --> U[Order tersimpan di Riwayat Order User]
+    R --> T([Selesai])
+    S --> T
+    U --> T
     ```
 
-## 3. Architecture Diagram
+## 4. Architecture Diagram
 
 Arsitektur project memakai pola Laravel MVC dengan Blade untuk view, controller untuk proses bisnis, model Eloquent untuk database, dan service khusus untuk integrasi Midtrans.
 
@@ -89,6 +127,7 @@ flowchart TB
     subgraph Laravel["Laravel Application"]
         Routes["routes/web.php"]
         AuthController["AuthController"]
+        AdminProductController["Admin ProductController"]
         OrderController["OrderController"]
         PaymentController["PaymentNotificationController"]
         MidtransService["MidtransService"]
@@ -99,6 +138,9 @@ flowchart TB
             Register["auth/register.blade.php"]
             Store["store.blade.php"]
             Status["status.blade.php"]
+            History["orders/history.blade.php"]
+            AdminDashboard["admin/dashboard.blade.php"]
+            AdminCreate["admin/products/create.blade.php"]
             Layout["layouts/app.blade.php"]
         end
 
@@ -115,10 +157,13 @@ flowchart TB
 
     Browser --> Routes
     Routes --> AuthController
+    Routes --> AdminProductController
     Routes --> OrderController
     Routes --> PaymentController
 
     AuthController --> User
+    AdminProductController --> Product
+    AdminProductController --> Order
     OrderController --> Product
     OrderController --> Order
     OrderController --> OrderItem
@@ -128,8 +173,11 @@ flowchart TB
 
     AuthController --> Login
     AuthController --> Register
+    AdminProductController --> AdminDashboard
+    AdminProductController --> AdminCreate
     OrderController --> Store
     OrderController --> Status
+    OrderController --> History
     Routes --> Dashboard
     Views --> Layout
 
@@ -142,7 +190,7 @@ flowchart TB
     Midtrans --> PaymentController
 ```
 
-## 4. Class Diagram
+## 5. Class Diagram
 
 Diagram class berikut mengikuti file model, controller, dan service yang ada di project.
 
@@ -154,6 +202,14 @@ classDiagram
         +showRegister() View
         +register(Request) RedirectResponse
         +logout(Request) RedirectResponse
+    }
+
+    class AdminProductController {
+        +dashboard(Request) View
+        +create(Request) View
+        +store(Request) RedirectResponse
+        -authorizeAdmin(Request) void
+        -uniqueSlug(slug) string
     }
 
     class OrderController {
@@ -184,7 +240,9 @@ classDiagram
         +name
         +email
         +password
+        +is_admin
         +remember_token
+        +orders()
     }
 
     class Product {
@@ -199,6 +257,7 @@ classDiagram
 
     class Order {
         +id
+        +user_id
         +customer_name
         +customer_email
         +customer_phone
@@ -208,6 +267,7 @@ classDiagram
         +payment_type
         +transaction_id
         +items()
+        +user()
     }
 
     class OrderItem {
@@ -220,6 +280,8 @@ classDiagram
     }
 
     AuthController --> User : create/login
+    AdminProductController --> Product : create/read
+    AdminProductController --> Order : count summary
     OrderController --> Product : read
     OrderController --> Order : create/read/update
     OrderController --> OrderItem : create
@@ -227,12 +289,14 @@ classDiagram
     PaymentNotificationController --> Order : update status
     PaymentNotificationController --> MidtransService : verify signature
     Order "1" --> "many" OrderItem : hasMany
+    User "1" --> "many" Order : hasMany
+    Order "many" --> "1" User : belongsTo
     Product "1" --> "many" OrderItem : referenced by
     OrderItem "many" --> "1" Order : belongsTo
     OrderItem "many" --> "1" Product : belongsTo
 ```
 
-## 5. Sequence Diagram
+## 6. Sequence Diagram User Checkout
 
 Sequence ini menggambarkan proses utama saat user membeli produk dari katalog sampai status order dibuat.
 
@@ -264,7 +328,7 @@ sequenceDiagram
     Routes->>OrderController: checkout(request)
     OrderController->>Product: findOrFail(product_id)
     Product-->>OrderController: data produk
-    OrderController->>Order: create(order)
+    OrderController->>Order: create(order with user_id)
     OrderController->>OrderItem: create(order item)
     OrderController->>MidtransService: getSnapToken(order)
 
@@ -284,7 +348,51 @@ sequenceDiagram
     StatusView-->>User: Status pembayaran ditampilkan
 ```
 
-## 6. ERD / Database Diagram
+## 7. Sequence Diagram Admin Tambah Katalog
+
+Sequence ini menggambarkan proses saat admin menambahkan produk baru ke katalog.
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    participant Browser
+    participant Routes as Laravel Routes
+    participant AdminProductController
+    participant Product
+    participant PublicImages as public/images/products
+    participant AdminDashboard as Admin Dashboard
+
+    Admin->>Browser: Buka /admin
+    Browser->>Routes: GET /admin
+    Routes->>AdminProductController: dashboard(request)
+    AdminProductController->>AdminProductController: authorizeAdmin(request)
+    AdminProductController->>Product: latest()->get()
+    Product-->>AdminProductController: daftar produk
+    AdminProductController-->>Browser: admin/dashboard.blade.php
+
+    Admin->>Browser: Klik Tambah Katalog
+    Browser->>Routes: GET /admin/katalog/tambah
+    Routes->>AdminProductController: create(request)
+    AdminProductController-->>Browser: admin/products/create.blade.php
+
+    Admin->>Browser: Submit form produk
+    Browser->>Routes: POST /admin/katalog
+    Routes->>AdminProductController: store(request)
+    AdminProductController->>AdminProductController: validate input
+    AdminProductController->>AdminProductController: generate unique slug
+
+    alt Admin upload gambar
+        AdminProductController->>PublicImages: simpan file gambar
+    else Admin isi path gambar
+        AdminProductController->>AdminProductController: gunakan image_path
+    end
+
+    AdminProductController->>Product: create(product)
+    Product-->>AdminProductController: produk tersimpan
+    AdminProductController-->>AdminDashboard: redirect admin.dashboard
+```
+
+## 8. ERD / Database Diagram
 
 Database utama project terdiri dari tabel users, products, orders, order_items, sessions, dan password_reset_tokens. Relasi transaksi utama berada pada orders, order_items, dan products.
 
@@ -296,6 +404,7 @@ erDiagram
         string email UK
         timestamp email_verified_at
         string password
+        boolean is_admin
         string remember_token
         timestamp created_at
         timestamp updated_at
@@ -315,6 +424,7 @@ erDiagram
 
     ORDERS {
         string id PK
+        bigint user_id FK
         string customer_name
         string customer_email
         string customer_phone
@@ -353,12 +463,13 @@ erDiagram
 
     ORDERS ||--|{ ORDER_ITEMS : contains
     PRODUCTS ||--|{ ORDER_ITEMS : purchased_as
+    USERS ||--o{ ORDERS : places
     USERS ||--o{ SESSIONS : may_have
 ```
 
 ## Catatan Batasan Sistem
 
-- Project saat ini belum memiliki fitur admin untuk CRUD produk.
+- Admin sudah bisa menambah produk katalog, tetapi fitur edit dan hapus produk belum tersedia.
 - Checkout hanya membeli satu produk per order.
-- Order belum terhubung langsung ke tabel users; data pelanggan disimpan di tabel orders sebagai `customer_name`, `customer_email`, dan `customer_phone`.
+- Order baru sudah terhubung ke tabel users melalui `orders.user_id`; data pelanggan tetap disimpan di tabel orders sebagai snapshot checkout.
 - Jika kredensial Midtrans belum dikonfigurasi, sistem memakai token simulasi dan fitur `simulatePay`.
