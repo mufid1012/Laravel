@@ -22,25 +22,28 @@
     })->values();
 @endphp
 
-<div class="max-w-5xl mx-auto px-6 py-16">
+<div class="max-w-6xl mx-auto px-6 py-16">
     
     <!-- Hero Banner -->
-    <div class="text-center md:text-left max-w-2xl mb-20 mt-8">
-        <h1 class="text-4xl md:text-5xl font-extralight tracking-tight text-white mb-6 leading-tight">
-            Elevating your digital workspace with <span class="font-normal text-zinc-400">minimalist aesthetics</span>.
+    <div class="text-center max-w-4xl mx-auto mb-16 mt-6">
+        <span class="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500 mb-7">
+            Katalog Digital
+        </span>
+        <h1 class="text-5xl md:text-6xl font-extralight tracking-tight text-white mb-6 leading-[1.05]">
+            Choose assets for a more intentional workspace.
         </h1>
-        <p class="text-zinc-400 text-sm leading-relaxed tracking-wide font-light">
-            A premium collection of high-fidelity desktop wallpapers, monochrome app icon bundles, Notion layouts, and structured log sheets built for focused minds.
+        <p class="text-zinc-400 text-sm md:text-base leading-relaxed font-light max-w-2xl mx-auto">
+            Buka detail produk terlebih dahulu untuk melihat deskripsi, harga, format file, dan manfaatnya sebelum lanjut checkout.
         </p>
     </div>
 
     <!-- Product Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @foreach($products as $product)
-            <div class="group flex flex-col justify-between border border-zinc-900 bg-zinc-950 p-6 rounded-2xl hover:border-zinc-800 transition-all duration-300">
+            <div class="group flex flex-col justify-between border border-zinc-900 bg-zinc-950 rounded-lg overflow-hidden hover:border-zinc-700 transition-all duration-300">
                 <div>
                     <!-- Image Wrapper -->
-                    <div class="relative w-full aspect-[16/10] overflow-hidden rounded-lg bg-zinc-900 border border-zinc-900/50 mb-6">
+                    <div class="relative w-full aspect-[16/10] overflow-hidden bg-zinc-900 border-b border-zinc-900">
                         <img 
                             src="{{ asset($product->image_path) }}" 
                             alt="{{ $product->name }}" 
@@ -49,26 +52,28 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     
-                    <!-- Metadata -->
-                    <div class="flex items-start justify-between gap-4 mb-3">
-                        <h2 class="text-lg font-medium text-white tracking-wide group-hover:text-zinc-200 transition-colors">
-                            {{ $product->name }}
-                        </h2>
-                        <span class="text-sm font-semibold text-zinc-400 tracking-wide whitespace-nowrap">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                        </span>
-                    </div>
+                    <div class="p-6">
+                        <!-- Metadata -->
+                        <div class="flex items-start justify-between gap-4 mb-3">
+                            <h2 class="text-xl font-semibold text-white tracking-tight group-hover:text-zinc-200 transition-colors">
+                                {{ $product->name }}
+                            </h2>
+                            <span class="text-xs font-semibold text-zinc-400 tracking-wide whitespace-nowrap">
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                            </span>
+                        </div>
 
-                    <!-- Description -->
-                    <p class="text-zinc-400 font-light text-xs leading-relaxed mb-8 tracking-wide">
-                        {{ $product->description }}
-                    </p>
+                        <!-- Description -->
+                        <p class="text-zinc-400 font-light text-sm leading-relaxed mb-7">
+                            {{ \Illuminate\Support\Str::limit($product->description, 150) }}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Purchase Button Trigger -->
                 <button
                     onclick="openProductDetail('{{ $product->id }}')"
-                    class="w-full text-center block bg-zinc-50 hover:bg-zinc-200 text-zinc-950 text-xs font-semibold py-3.5 rounded-lg tracking-widest transition-all duration-200 uppercase"
+                    class="m-6 mt-0 text-center block bg-zinc-50 hover:bg-zinc-200 text-zinc-950 text-xs font-semibold py-3.5 rounded-lg tracking-widest transition-all duration-200 uppercase"
                 >
                     Lihat Detail Produk
                 </button>
@@ -77,23 +82,23 @@
     </div>
 
     <!-- Features Section (Why Us) -->
-    <div class="mt-32 border-t border-zinc-900 pt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
-            <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Instant Delivery</h3>
-            <p class="text-zinc-500 font-light text-xs leading-relaxed">
-                Immediately receive direct, permanent download links once payment is authenticated by the gateway.
+    <div class="mt-20 grid grid-cols-1 md:grid-cols-3 border border-zinc-900 bg-zinc-950 rounded-lg overflow-hidden">
+        <div class="p-8 md:border-r border-zinc-900">
+            <h3 class="text-xl font-semibold text-white mb-3">Detail first</h3>
+            <p class="text-zinc-400 font-light text-sm leading-relaxed">
+                Setiap katalog menampilkan informasi produk sebelum user masuk ke proses pembayaran.
             </p>
         </div>
-        <div>
-            <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Clean Aesthetic</h3>
-            <p class="text-zinc-500 font-light text-xs leading-relaxed">
-                Every wallpaper, icon, and template is meticulously curated to guarantee peak aesthetic layouts.
+        <div class="p-8 md:border-r border-zinc-900">
+            <h3 class="text-xl font-semibold text-white mb-3">Clean aesthetic</h3>
+            <p class="text-zinc-400 font-light text-sm leading-relaxed">
+                Produk dibuat dengan visual minimal agar workspace terasa lebih rapi dan fokus.
             </p>
         </div>
-        <div>
-            <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Secure Payments</h3>
-            <p class="text-zinc-500 font-light text-xs leading-relaxed">
-                Transactions are processed securely through a sandbox payment gateway using standard modern compliance.
+        <div class="p-8">
+            <h3 class="text-xl font-semibold text-white mb-3">Saved orders</h3>
+            <p class="text-zinc-400 font-light text-sm leading-relaxed">
+                Order dari akun user tersimpan di riwayat agar status dan akses produk mudah ditemukan.
             </p>
         </div>
     </div>
@@ -101,7 +106,7 @@
 
 <!-- Product Detail Modal -->
 <div id="productDetailModal" class="fixed inset-0 z-50 hidden bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
         <button
             onclick="closeProductDetail()"
             class="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors"
@@ -114,16 +119,16 @@
 
         <div class="grid grid-cols-1 md:grid-cols-[0.95fr_1.05fr] gap-8">
             <div>
-                <div class="relative w-full aspect-[16/10] overflow-hidden rounded-xl bg-zinc-950 border border-zinc-800">
+                <div class="relative w-full aspect-[16/10] overflow-hidden rounded-lg bg-zinc-950 border border-zinc-800">
                     <img id="detailProductImage" src="" alt="" class="w-full h-full object-cover object-center">
                 </div>
 
                 <div class="mt-5 grid grid-cols-2 gap-3">
-                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4">
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-lg p-4">
                         <p class="text-[10px] tracking-widest uppercase text-zinc-500 font-semibold">Harga</p>
                         <p id="detailProductPrice" class="text-sm font-semibold text-white mt-1"></p>
                     </div>
-                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4">
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-lg p-4">
                         <p class="text-[10px] tracking-widest uppercase text-zinc-500 font-semibold">Format</p>
                         <p id="detailProductFormat" class="text-xs text-zinc-300 mt-1 leading-relaxed"></p>
                     </div>
@@ -173,7 +178,7 @@
 
 <!-- Checkout Modal -->
 <div id="checkoutModal" class="fixed inset-0 z-50 hidden bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
         <!-- Close Button -->
         <button 
             onclick="closeCheckoutModal()" 

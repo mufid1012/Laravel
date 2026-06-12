@@ -35,7 +35,15 @@ flowchart LR
 
         subgraph AdminArea["Area Admin"]
             UC_AdminDashboard(["Melihat Dashboard Admin"])
+<<<<<<< HEAD
             UC_AddProduct(["Menambah Produk Katalog"])
+=======
+            UC_ManageCatalog(["Melihat Kelola Katalog"])
+            UC_ViewUserOrders(["Melihat Order User"])
+            UC_AddProduct(["Menambah Produk Katalog"])
+            UC_EditProduct(["Mengedit Produk Katalog"])
+            UC_DeleteProduct(["Menghapus Produk Katalog"])
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
             UC_UploadImage(["Upload Gambar Produk"])
             UC_ImagePath(["Mengisi Path Gambar"])
             UC_LogoutAdmin(["Logout Admin"])
@@ -65,7 +73,15 @@ flowchart LR
     User --> UC_LogoutUser
 
     Admin --> UC_AdminDashboard
+<<<<<<< HEAD
     Admin --> UC_AddProduct
+=======
+    Admin --> UC_ManageCatalog
+    Admin --> UC_ViewUserOrders
+    Admin --> UC_AddProduct
+    Admin --> UC_EditProduct
+    Admin --> UC_DeleteProduct
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
     Admin --> UC_LogoutAdmin
 
     Midtrans --> UC_Callback
@@ -78,9 +94,21 @@ flowchart LR
     UC_Callback -. include .-> UC_UpdateStatus
 
     UC_AdminDashboard -. include auth admin .-> UC_Login
+<<<<<<< HEAD
     UC_AddProduct -. include auth admin .-> UC_AdminDashboard
     UC_AddProduct -. extend opsi gambar .-> UC_UploadImage
     UC_AddProduct -. extend opsi gambar .-> UC_ImagePath
+=======
+    UC_ManageCatalog -. include auth admin .-> UC_AdminDashboard
+    UC_ViewUserOrders -. include auth admin .-> UC_AdminDashboard
+    UC_AddProduct -. include auth admin .-> UC_ManageCatalog
+    UC_EditProduct -. include auth admin .-> UC_ManageCatalog
+    UC_DeleteProduct -. include auth admin .-> UC_ManageCatalog
+    UC_AddProduct -. extend opsi gambar .-> UC_UploadImage
+    UC_AddProduct -. extend opsi gambar .-> UC_ImagePath
+    UC_EditProduct -. extend opsi gambar .-> UC_UploadImage
+    UC_EditProduct -. extend opsi gambar .-> UC_ImagePath
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
 
     UC_MidtransToken --> Midtrans
 ```
@@ -114,7 +142,13 @@ flowchart TD
     L --> N[Produk disimpan ke database]
     M --> N
     N --> O[Produk muncul di Dashboard Admin dan Katalog User]
+<<<<<<< HEAD
     O --> P([Selesai])
+=======
+    O --> P[Admin dapat edit atau hapus katalog]
+    P --> Q[Admin dapat membuka Order User]
+    Q --> R([Selesai])
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
 ```
 
 Admin dipisahkan dari alur user. Jika admin membuka dashboard user, katalog belanja, riwayat order user, checkout, atau status order user, sistem mengarahkannya kembali ke dashboard admin.
@@ -177,7 +211,14 @@ flowchart TB
             Status["status.blade.php"]
             History["orders/history.blade.php"]
             AdminDashboard["admin/dashboard.blade.php"]
+<<<<<<< HEAD
             AdminCreate["admin/products/create.blade.php"]
+=======
+            AdminCatalog["admin/products/index.blade.php"]
+            AdminCreate["admin/products/create.blade.php"]
+            AdminEdit["admin/products/edit.blade.php"]
+            AdminOrders["admin/orders/index.blade.php"]
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
             Layout["layouts/app.blade.php"]
         end
 
@@ -211,7 +252,14 @@ flowchart TB
     AuthController --> Login
     AuthController --> Register
     AdminProductController --> AdminDashboard
+<<<<<<< HEAD
     AdminProductController --> AdminCreate
+=======
+    AdminProductController --> AdminCatalog
+    AdminProductController --> AdminCreate
+    AdminProductController --> AdminEdit
+    AdminProductController --> AdminOrders
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
     OrderController --> Store
     OrderController --> Status
     OrderController --> History
@@ -243,10 +291,22 @@ classDiagram
 
     class AdminProductController {
         +dashboard(Request) View
+<<<<<<< HEAD
         +create(Request) View
         +store(Request) RedirectResponse
         -authorizeAdmin(Request) void
         -uniqueSlug(slug) string
+=======
+        +orders(Request) View
+        +create(Request) View
+        +store(Request) RedirectResponse
+        +edit(Request, Product) View
+        +update(Request, Product) RedirectResponse
+        +destroy(Request, Product) RedirectResponse
+        -authorizeAdmin(Request) void
+        -uniqueSlug(slug) string
+        -storeImage(Request, slug) string
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
     }
 
     class OrderController {
@@ -317,8 +377,13 @@ classDiagram
     }
 
     AuthController --> User : create/login
+<<<<<<< HEAD
     AdminProductController --> Product : create/read
     AdminProductController --> Order : count summary
+=======
+    AdminProductController --> Product : create/read/update/delete
+    AdminProductController --> Order : count and list user orders
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
     OrderController --> Product : read
     OrderController --> Order : create/read/update
     OrderController --> OrderItem : create
@@ -455,6 +520,7 @@ erDiagram
         decimal price
         string image_path
         string download_url
+        timestamp deleted_at
         timestamp created_at
         timestamp updated_at
     }
@@ -506,7 +572,12 @@ erDiagram
 
 ## Catatan Batasan Sistem
 
+<<<<<<< HEAD
 - Admin sudah bisa menambah produk katalog, tetapi fitur edit dan hapus produk belum tersedia.
+=======
+- Admin sudah bisa melihat dashboard admin, melihat order user, menambah katalog, mengedit katalog, dan menghapus katalog dari tampilan user.
+- Hapus katalog memakai soft delete agar riwayat order lama tetap dapat membaca data produk melalui `OrderItem`.
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
 - Admin tidak memakai halaman user seperti katalog belanja, riwayat order, checkout, dan status order user.
 - Checkout hanya membeli satu produk per order.
 - Order baru sudah terhubung ke tabel users melalui `orders.user_id`; data pelanggan tetap disimpan di tabel orders sebagai snapshot checkout.

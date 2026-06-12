@@ -3,6 +3,7 @@
 @section('title', 'Tambah Katalog — Karsa Studio')
 
 @section('content')
+<<<<<<< HEAD
 <div class="max-w-3xl mx-auto px-6 py-16">
     <div class="mb-10">
         <span class="text-[10px] tracking-[0.25em] uppercase text-zinc-500 font-semibold">Admin</span>
@@ -10,11 +11,25 @@
             Tambah <span class="font-normal text-zinc-400">Katalog</span>
         </h1>
         <p class="text-zinc-400 text-sm leading-relaxed tracking-wide font-light max-w-2xl mt-4">
+=======
+<div class="max-w-6xl mx-auto px-6 py-16">
+    <div class="max-w-3xl mx-auto">
+    <div class="mb-10">
+        <span class="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">Admin</span>
+        <h1 class="text-5xl md:text-6xl font-extralight tracking-tight text-white mt-6 leading-[1.05]">
+            Tambah <span class="font-normal text-zinc-400">Katalog</span>
+        </h1>
+        <p class="text-zinc-400 text-sm md:text-base leading-relaxed font-light max-w-2xl mt-5">
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
             Isi data produk digital baru. Produk akan langsung muncul di katalog setelah disimpan.
         </p>
     </div>
 
+<<<<<<< HEAD
     <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-2xl">
+=======
+    <div class="border border-zinc-900 bg-zinc-950 p-8 rounded-lg">
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
         @if($errors->any())
             <div class="mb-6 rounded-lg border border-rose-900/50 bg-rose-950/30 px-4 py-3 text-xs text-rose-200">
                 <ul class="space-y-1">
@@ -69,11 +84,19 @@
                 <button type="submit" class="flex-1 bg-zinc-50 hover:bg-zinc-200 text-zinc-950 text-xs font-semibold py-3.5 rounded-lg tracking-widest transition-all duration-200 uppercase">
                     Simpan Katalog
                 </button>
+<<<<<<< HEAD
                 <a href="{{ route('admin.dashboard') }}" class="flex-1 text-center bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold py-3.5 rounded-lg border border-zinc-800 tracking-widest transition-all duration-200 uppercase">
+=======
+                <a href="{{ route('admin.products.index') }}" class="flex-1 text-center bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold py-3.5 rounded-lg border border-zinc-800 tracking-widest transition-all duration-200 uppercase">
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
                     Batal
                 </a>
             </div>
         </form>
     </div>
+<<<<<<< HEAD
+=======
+    </div>
+>>>>>>> fc694cda65b87420d7240fc476ed441da6c2658a
 </div>
 @endsection
